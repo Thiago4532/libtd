@@ -1,5 +1,5 @@
-#ifndef ARGV_H
-#define ARGV_H
+#ifndef LIBTD_ARGV_H
+#define LIBTD_ARGV_H
 
 #include <stdbool.h>
 
