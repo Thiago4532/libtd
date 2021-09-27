@@ -46,7 +46,6 @@ argv_dappend(struct argv* a, const char* str) {
     argv_append(a, s);
 }
 
-// Returns a copy of fmt with all spaces converted to delim.
 static char*
 argv_prep_format(const char* fmt, const char delim, struct gc_unit* gc) {
     char* ret = gc_strdup(fmt, gc);
