@@ -18,6 +18,7 @@ project(libtd C)
 set(LIBTD_SOURCES
   src/gc.c
   src/argv.c
+  src/string.c
 )
 
 option(LIBTD_TEST "Generate the test target." ${LIBTD_MASTER_PROJECT})
