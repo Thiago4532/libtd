@@ -1,13 +1,17 @@
 #include <stdio.h>
-#include "libtd/gc.h"
+
 #include "libtd/argv.h"
+#include "libtd/gc.h"
+#include "libtd/string.h"
+
+#include <errno.h>
 
 int main() {
-    struct argv a = argv_new();
+    struct gc_unit gc = gc_new();
+    struct string str = string_new();
 
-    argv_printf(&a, "echo test");
+    string_concat(&str, "thiago mota");
 
-    puts(argv_to_string(&a, &a.gc, AF_BRACKET));
-
-    argv_free(&a);
+    printf("String: %s\n", str.data);
+    return 0;
 }
