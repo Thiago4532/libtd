@@ -23,4 +23,13 @@ void string_concat(struct string* s, const char* str);
 
 void string_free(struct string* s);
 
+/* Inline functions */
+
+static inline void
+string_clear(struct string* s) {
+    s->size = 0;
+    s->data[0] = '\0';
+}
+
+
 #endif
