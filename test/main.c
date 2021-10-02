@@ -1,12 +1,12 @@
+#include <errno.h>
 #include <stdio.h>
 
 #include "libtd/argv.h"
 #include "libtd/gc.h"
 #include "libtd/string.h"
 
-#include <errno.h>
-
-int main() {
+int
+main() {
     struct gc_unit gc = gc_new();
     struct string str = string_new();
 
