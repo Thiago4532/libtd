@@ -28,7 +28,7 @@ gc_malloc(size_t size, struct gc_unit* g) {
 void*
 gc_realloc(void* p, size_t size, struct gc_unit* gc) {
     if (gc) {
-        struct gc_entry* e = p - sizeof(struct gc_entry);
+        struct gc_entry* e = (struct gc_entry*)p - 1;
 
         e = realloc(e, sizeof(struct gc_entry) + size);
 
@@ -51,7 +51,7 @@ gc_free(void* p, struct gc_unit* gc) {
     if (gc) {
         if (!p)
             return;
-        struct gc_entry* e = p - sizeof(struct gc_entry);
+        struct gc_entry* e = (struct gc_entry*)p - 1;
 
         if (!e->prev)
             gc->list = e->next;

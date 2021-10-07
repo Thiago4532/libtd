@@ -75,7 +75,7 @@ argv_printf_arglist(struct argv* a, const char* format, va_list arglist) {
     size_t size = len + 1;
     char* buf = gc_malloc(size, &a->gc);
     len = vsprintf(buf, fmt, arglist);
-    if (len < 0 || len >= size)
+    if (len < 0 || len >= (int)size)
         return false;
 
     char* end = strchr(buf, delim);
@@ -113,7 +113,7 @@ argv_printf_cat(struct argv* a, const char* format, ...) {
 char*
 argv_to_string(struct argv* a, struct gc_unit* gc, unsigned int flags) {
     size_t size = 1;
-    for (int i = 0; i < a->argc; i++) {
+    for (size_t i = 0; i < a->argc; i++) {
         if (i)
             size++;
 
@@ -130,7 +130,7 @@ argv_to_string(struct argv* a, struct gc_unit* gc, unsigned int flags) {
     char* buf = gc_malloc(size, gc);
 
     char* ptr = buf;
-    for (int i = 0; i < a->argc; i++) {
+    for (size_t i = 0; i < a->argc; i++) {
         if (i)
             *ptr++ = ' ';
         if (flags & AF_BRACKET)

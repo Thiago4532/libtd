@@ -13,7 +13,6 @@ endif ()
 if (LIBTD_MASTER_PROJECT AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
 endif ()
-
 project(libtd C)
 set(LIBTD_SOURCES
   src/gc.c
@@ -35,6 +34,13 @@ endif ()
 add_library(libtd ${LIBTD_SOURCES})
 target_include_directories(libtd PUBLIC include/)
 set_target_properties(libtd PROPERTIES PREFIX "")
+
+# Enable warnings.
+if (MSVC)
+  target_compile_options(libtd PRIVATE /W4 /WX)
+else()
+  target_compile_options(libtd PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
 
 if (LIBTD_TEST)
   add_subdirectory(test)
