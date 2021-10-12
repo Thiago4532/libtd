@@ -12,7 +12,7 @@ main() {
 
     string_concat(&str, "thiago mota");
 
-    struct argv a = argv_new();
+    struct argv a = argv_new_gc(&gc);
 
     argv_printf(&a, "echo %s", "Testing function...");
 
@@ -20,6 +20,5 @@ main() {
     printf("String: %s\n", str.data);
 
     gc_free_unit(&gc);
-    argv_free(&a);
     return 0;
 }

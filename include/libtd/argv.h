@@ -6,13 +6,15 @@
 #include "libtd/gc.h"
 
 struct argv {
-    struct gc_unit gc;
+    struct gc_unit* gc;
     size_t capacity;
     size_t argc;
     char** argv;
 };
 
 struct argv argv_new(void);
+
+struct argv argv_new_gc(struct gc_unit* gc);
 
 void argv_reset(struct argv* a);
 
@@ -35,7 +37,7 @@ void argv_free(struct argv* a);
 
 static inline char*
 argv_str(struct argv* a) {
-    return argv_to_string(a, &a->gc, 0);
+    return argv_to_string(a, a->gc, 0);
 }
 
 #endif

@@ -37,9 +37,9 @@ set_target_properties(libtd PROPERTIES PREFIX "")
 
 # Enable warnings.
 if (MSVC)
-  target_compile_options(libtd PRIVATE /W4 /WX)
+  target_compile_options(libtd PRIVATE /W4)
 else()
-  target_compile_options(libtd PRIVATE -Wall -Wextra -pedantic -Werror)
+  target_compile_options(libtd PRIVATE -Wall -Wextra -pedantic)
 endif()
 
 if (LIBTD_TEST)

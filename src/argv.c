@@ -1,5 +1,6 @@
 #include "libtd/argv.h"
 
+#include <malloc.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,12 +8,16 @@
 #include "libtd/gc.h"
 
 static void
-argv_init(struct argv* a) {
+argv_init(struct argv* a, struct gc_unit* gc) {
     a->capacity = 8;
     a->argc = 0;
-    a->gc = gc_new();
+    a->gc = gc;
+    if (!a->gc) {
+        a->gc = malloc(sizeof *a->gc);
+        gc_init(a->gc);
+    }
 
-    a->argv = gc_malloc(a->capacity * sizeof(char*), &a->gc);
+    a->argv = gc_malloc(a->capacity * sizeof(char*), a->gc);
     *a->argv = NULL;
 }
 
@@ -25,7 +30,14 @@ argv_reset(struct argv* a) {
 struct argv
 argv_new(void) {
     struct argv ret;
-    argv_init(&ret);
+    argv_init(&ret, NULL);
+    return ret;
+}
+
+struct argv
+argv_new_gc(struct gc_unit* gc) {
+    struct argv ret;
+    argv_init(&ret, gc);
     return ret;
 }
 
@@ -34,7 +46,7 @@ argv_append(struct argv* a, char* str) {
     a->argv[a->argc++] = str;
 
     if (a->argc >= a->capacity) {
-        a->argv = gc_realloc(a->argv, 2 * a->capacity * sizeof(char*), &a->gc);
+        a->argv = gc_realloc(a->argv, 2 * a->capacity * sizeof(char*), a->gc);
         a->capacity *= 2;
     }
     a->argv[a->argc] = NULL;
@@ -42,7 +54,7 @@ argv_append(struct argv* a, char* str) {
 
 void
 argv_dappend(struct argv* a, const char* str) {
-    char* s = gc_strdup(str, &a->gc);
+    char* s = gc_strdup(str, a->gc);
     argv_append(a, s);
 }
 
@@ -61,7 +73,7 @@ argv_prep_format(const char* fmt, const char delim, struct gc_unit* gc) {
 static bool
 argv_printf_arglist(struct argv* a, const char* format, va_list arglist) {
     const char delim = 0x1D; /* ASCII Group Separator (GS) */
-    char* fmt = argv_prep_format(format, delim, &a->gc);
+    char* fmt = argv_prep_format(format, delim, a->gc);
     if (!fmt)
         return false;
 
@@ -73,7 +85,7 @@ argv_printf_arglist(struct argv* a, const char* format, va_list arglist) {
         return false;
 
     size_t size = len + 1;
-    char* buf = gc_malloc(size, &a->gc);
+    char* buf = gc_malloc(size, a->gc);
     len = vsprintf(buf, fmt, arglist);
     if (len < 0 || len >= (int)size)
         return false;
@@ -143,5 +155,6 @@ argv_to_string(struct argv* a, struct gc_unit* gc, unsigned int flags) {
 
 void
 argv_free(struct argv* a) {
-    gc_free_unit(&a->gc);
+    gc_free_unit(a->gc);
+    free(a->gc);
 }

@@ -66,8 +66,30 @@ gc_free(void* p, struct gc_unit* gc) {
     }
 }
 
+void gc_addcustom(void* addr, void (*free_function)(void*), struct gc_unit* g) {
+    if (g) {
+        struct gc_custom_entry* ec = malloc(sizeof *ec);
+        ec->addr = addr;
+        ec->free_func = free_function;
+
+        ec->next = g->custom_list;
+        g->custom_list = ec;
+    }
+}
+
 void
 gc_free_unit(struct gc_unit* g) {
+    struct gc_custom_entry* ec;
+    ec = g->custom_list;
+    g->custom_list = NULL;
+
+    while (ec) {
+        struct gc_custom_entry* next = ec->next;
+        ec->free_func(ec->addr);
+        free(ec);
+        ec = next;
+    }
+
     struct gc_entry* e;
     e = g->list;
     g->list = NULL;

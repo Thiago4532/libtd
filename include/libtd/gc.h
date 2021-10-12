@@ -19,13 +19,22 @@ struct gc_entry {
     struct gc_entry* prev;
 };
 
+struct gc_custom_entry {
+    struct gc_custom_entry* next;
+
+    void* addr;
+    void (*free_func)(void*);
+};
+
 /**
  * Garbage collection unit used to keep track of dynamic allocated memory.
  *
- * This structure contains a double linked list.
+ * @member list         Double linked list
+ * @member custom_list  Custom entry linked list
  */
 struct gc_unit {
     struct gc_entry* list;
+    struct gc_custom_entry* custom_list;
 };
 
 /**
@@ -62,6 +71,8 @@ void* gc_realloc(void* ptr, size_t size, struct gc_unit* g);
  */
 void gc_free(void* ptr, struct gc_unit* g);
 
+void gc_addcustom(void* addr, void (*free_function)(void*), struct gc_unit* g);
+
 /**
  * Frees all the memory allocated in the @g unit.
  *
@@ -92,6 +103,7 @@ char* gc_strdup(const char* str, struct gc_unit* g);
 static inline void
 gc_init(struct gc_unit* a) {
     a->list = (void*)0;
+    a->custom_list = (void*)0;
 }
 
 /**
